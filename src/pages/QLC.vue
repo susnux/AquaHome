@@ -1,5 +1,17 @@
 <template>
   <q-page>
-    <iframe src="/qlcplus" frameBorder="0" style="width: 100%; height: 100%"></iframe>
+    <iframe :src="url" frameBorder="0" style="width: 100vw; height: 100vh"></iframe>
   </q-page>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
+  setup() {
+    return {
+      url: `${window.location.protocol}//${window.location.host}:9999`
+    }
+  },
+})
+</script>
