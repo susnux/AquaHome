@@ -1,6 +1,6 @@
 import { api } from 'boot/axios';
 
-interface BooleanAnswer {
+export interface BooleanAnswer {
   data: boolean;
 }
 

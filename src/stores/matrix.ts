@@ -6,7 +6,7 @@ import { BooleanAnswer } from '../components/AquaPI';
 export type Mode = 'blackout' | 'color' | 'fade' | 'rainbow' | 'manual' | 'text' | 'fish_tank';
 
 interface StatusAnswer {
-  mode: string;
+  mode: Mode;
   ok: boolean;
   speed: number;
   brightness: number;
@@ -23,7 +23,7 @@ function handleError(e: AxiosError) {
 
 export const useMatrixStore = defineStore('matrix', {
   state: () => ({
-    mode: 'blackout',
+    mode: 'blackout' as Mode,
     _lastMode: 'color' as Mode,
     _lastData: { color: parseInt('ffab00', 16) } as object | undefined,
     isBlackout: true,
@@ -36,11 +36,15 @@ export const useMatrixStore = defineStore('matrix', {
     },
   },
   actions: {
-    async status() {
-      const { data } = await api.get<StatusAnswer>('matrix/status');
-      this.mode = data.mode;
-      this.speed = data.speed;
-      this.brightness = data.brightness;
+    status() {
+      return api
+        .get<StatusAnswer>('matrix/status')
+        .then(({ data }) => {
+          this.mode = data.mode;
+          this.speed = data.speed;
+          this.brightness = data.brightness;
+        })
+        .catch(handleError);
     },
     blackout(x = true) {
       if (x) void this.setMode('blackout');

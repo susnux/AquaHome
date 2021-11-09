@@ -62,6 +62,8 @@ def set_mode():
         prefs = data.get("prefs", {})
         if mode == "blackout":
             return _set_mode(Mode.blackout)
+        elif mode == "manual":
+            return _set_mode(Mode.manual)
         elif mode == "color":
             return _set_mode(Mode.color, prefs.get("color", None))
         elif mode == "fade":

@@ -46,9 +46,9 @@
 import { computed, defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import ColorPanel from 'src/components/light/ColorPanel.vue';
 import AnimationPanel from 'src/components/light/AnimationPanel.vue';
-import ManualPanel from 'src/components/light/ManualPanel.vue'
+import ManualPanel from 'src/components/light/ManualPanel.vue';
 import { useMatrixStore } from 'src/stores/matrix';
-import { debounce } from 'quasar';
+import { debounce, Notify } from 'quasar';
 
 export default defineComponent({
   name: 'PageAudio',
@@ -56,15 +56,22 @@ export default defineComponent({
   setup() {
     const store = useMatrixStore();
 
-    const _int = ref(setInterval(() => void store.status(), 60000));
+    const _int = ref(
+      setInterval(
+        () => void store.status().catch((e) => Notify.create({ type: 'negative', message: e as string })),
+        60000
+      )
+    );
 
     onMounted(() => {
-      void store.status();
+      store.status().catch((e) => {
+        Notify.create({ type: 'negative', timeout: 1000, message: e as string });
+      });
     });
 
     onUnmounted(() => clearInterval(_int.value));
 
-    const tab = ref(store.mode === 'text' ? 'text' : 'colors');
+    const tab = ref(store.mode === 'manual' ? 'manual' : 'colors');
 
     const brightness = computed({
       get: () => store.brightness,
