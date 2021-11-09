@@ -105,12 +105,22 @@
 <script lang="ts">
 import { computed, defineComponent, ref, onBeforeMount } from 'vue';
 import { Notify, useQuasar } from 'quasar';
-import {getBarFloorBalance, isBarMuted, isPiLimited, isPiMuted, isSubwooferMuted, limitPi, muteBar, mutePi, setBarFloorBalance} from 'src/components/AquaPI'
+import {
+  getBarFloorBalance,
+  isBarMuted,
+  isPiLimited,
+  isPiMuted,
+  isSubwooferMuted,
+  limitPi,
+  muteBar,
+  mutePi,
+  setBarFloorBalance,
+} from 'src/components/AquaPI';
 
 export default defineComponent({
   name: 'PageAudio',
   setup() {
-    const init = ref(false)
+    const init = ref(false);
     const $q = useQuasar();
 
     onBeforeMount(() => {
@@ -118,46 +128,47 @@ export default defineComponent({
         $q.loading.show({
           delay: 300, // ms
         });
-        loadValues().finally(() => {init.value = true; $q.loading.hide()})
+        loadValues().finally(() => {
+          init.value = true;
+          $q.loading.hide();
+        });
       }
     });
-
 
     // gain smoker lounge, -9db up to +3db
     const smokerGain = ref(0);
     const smokerMuted = ref(true);
 
-
     // bar ------- 0 -------- floor
     //   -12dB ... 0 ... 12 dB
-    const _balanceBarFloor = ref(0)
+    const _balanceBarFloor = ref(0);
     const balanceBarFloor = computed({
       get: () => _balanceBarFloor.value,
-      set: (x: number) => setBarFloorBalance(x).then(resp => _balanceBarFloor.value = resp.data.data)
-    })
+      set: (x: number) => setBarFloorBalance(x).then((resp) => (_balanceBarFloor.value = resp.data.data)),
+    });
 
     const _barMuted = ref(false);
-    const barMuted  = computed({
+    const barMuted = computed({
       get: () => _barMuted.value,
-      set: (x: boolean) => muteBar(x).then(resp => _barMuted.value = resp.data.data)
-    })
-  
+      set: (x: boolean) => muteBar(x).then((resp) => (_barMuted.value = resp.data.data)),
+    });
+
     const _subwooferMuted = ref(false);
-    const subwooferMuted  = computed({
+    const subwooferMuted = computed({
       get: () => _subwooferMuted.value,
-      set: (x: boolean) => muteBar(x).then(resp => _subwooferMuted.value = resp.data.data)
-    })
+      set: (x: boolean) => muteBar(x).then((resp) => (_subwooferMuted.value = resp.data.data)),
+    });
 
     const _piMuted = ref(false);
-    const piMuted  = computed({
+    const piMuted = computed({
       get: () => _piMuted.value,
-      set: (x: boolean) => mutePi(x).then(resp => _piMuted.value = resp.data.data)
-    })
+      set: (x: boolean) => mutePi(x).then((resp) => (_piMuted.value = resp.data.data)),
+    });
     const _piLimited = ref(true);
-    const piLimited  = computed({
+    const piLimited = computed({
       get: () => _piLimited.value,
-      set: (x: boolean) => limitPi(x).then(resp => _piLimited.value = resp.data.data)
-    })
+      set: (x: boolean) => limitPi(x).then((resp) => (_piLimited.value = resp.data.data)),
+    });
 
     async function loadValues() {
       try {
@@ -169,8 +180,8 @@ export default defineComponent({
       } catch (error) {
         Notify.create({
           message: 'Keine Kommunikation möglich, ¿Queerdenker?',
-          type: 'negative'          
-        })
+          type: 'negative',
+        });
       }
     }
 

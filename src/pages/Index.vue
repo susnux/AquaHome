@@ -17,21 +17,24 @@ import { Notify, useQuasar } from 'quasar';
 export default defineComponent({
   name: 'PageIndex',
   setup() {
-    const $q = useQuasar()
-    const init = ref(false)
+    const $q = useQuasar();
+    const init = ref(false);
     const muteIcon = ref('mdi-volume-mute');
     const _piMuted = ref(false);
     function mute() {
-       void mutePi(!_piMuted.value).then(resp => _piMuted.value = resp.data.data)
-       if (_piMuted.value) muteIcon.value = 'mdi-volume-mute'
-       else muteIcon.value = 'mdi-volume-high'
+      void mutePi(!_piMuted.value).then((resp) => (_piMuted.value = resp.data.data));
+      if (_piMuted.value) muteIcon.value = 'mdi-volume-mute';
+      else muteIcon.value = 'mdi-volume-high';
     }
     onBeforeMount(() => {
       if (!init.value) {
         $q.loading.show({
           delay: 300, // ms
         });
-        loadValues().finally(() => {init.value = true; $q.loading.hide()})
+        loadValues().finally(() => {
+          init.value = true;
+          $q.loading.hide();
+        });
       }
     });
     async function loadValues() {
@@ -40,8 +43,8 @@ export default defineComponent({
       } catch (error) {
         Notify.create({
           message: 'Keine Kommunikation möglich, ¿Queerdenker?',
-          type: 'negative'          
-        })
+          type: 'negative',
+        });
       }
     }
 
