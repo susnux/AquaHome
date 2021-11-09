@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpr fff">
-    <q-header elevated class="bg-primary text-white" height-hint="98">
+    <q-header elevated class="bg-primary text-black" height-hint="98">
       <q-toolbar>
         <q-toolbar-title>
           <q-btn v-if="mobile" flat @click="drawer = !drawer" round dense icon="mdi-menu" />
