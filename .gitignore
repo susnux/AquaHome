@@ -3,6 +3,8 @@
 node_modules
 yarn.lock
 
+venv/
+
 # Quasar core related directories
 .quasar
 /dist
