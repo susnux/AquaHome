@@ -1,25 +1,31 @@
 <template>
   <q-page>
-    <q-toggle label="DMX Steuerung" disable v-model="dmxControlled"></q-toggle>
-    <q-toggle label="Alles aus (Blackout)" :disable="dmxControlled" v-model="blackout"></q-toggle>
+    <q-toggle label="Alles aus (Blackout)" v-model="blackout"></q-toggle>
+    <q-item>
+      <q-item-section side>
+        <q-icon name="mdi-brightness-6" />
+      </q-item-section>
+      <q-item-section>
+        <q-slider v-model="brightness" :disable="blackout" title="Helligkeit" :min="0" :max="255" />
+      </q-item-section>
+    </q-item>
     <q-card>
       <q-tabs v-model="tab" dense align="justify" narrow-indicator>
-        <q-tab :disable="dmxControlled" name="animations" label="Animationen" />
-        <q-tab :disable="dmxControlled" name="colors" label="Farben" />
-        <q-tab :disable="dmxControlled" name="music" label="Musik" />
-        <q-tab :disable="dmxControlled" name="text" label="Text" />
+        <q-tab :disable="blackout" name="animations" label="Animationen" />
+        <q-tab :disable="blackout" name="colors" label="Farben" />
+        <q-tab :disable="blackout" name="music" label="Musik" />
+        <q-tab :disable="blackout" name="manual" label="Kreativ" />
       </q-tabs>
 
       <q-separator />
 
-      <q-tab-panels :model-value="dmxControlled ? 'dmx' : tab" animated>
-        <q-tab-panel name="dmx">
-          <div class="text-h6">DMX gesteuert</div>
-          Aktuell wird die Beleuchtung über DMX gesteuert.
+      <q-tab-panels :model-value="blackout ? 'blackout' : tab" animated>
+        <q-tab-panel name="blackout" style="text-align: center">
+          <div class="text-h6">Blackout</div>
+          Aktuell ist die Beleuchtung ausgeschaltet.
         </q-tab-panel>
         <q-tab-panel name="animations">
-          <div class="text-h5">aquarium</div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          <animation-panel />
         </q-tab-panel>
         <q-tab-panel name="colors">
           <color-panel />
@@ -28,8 +34,8 @@
           <div class="text-h6">aquarium</div>
           Lorem ipsum dolor sit amet consectetur adipisicing elit.
         </q-tab-panel>
-        <q-tab-panel name="text">
-          <text-panel />
+        <q-tab-panel name="manual">
+          <manual-panel />
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -37,19 +43,40 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import ColorPanel from 'src/components/light/ColorPanel.vue';
-import TextPanel from 'src/components/light/TextPanel.vue';
+import AnimationPanel from 'src/components/light/AnimationPanel.vue';
+import ManualPanel from 'src/components/light/ManualPanel.vue'
+import { useMatrixStore } from 'src/stores/matrix';
+import { debounce } from 'quasar';
 
 export default defineComponent({
   name: 'PageAudio',
-  components: { ColorPanel, TextPanel },
+  components: { ColorPanel, AnimationPanel, ManualPanel },
   setup() {
-    const dmxControlled = ref(true);
-    const tab = ref('colors');
-    const blackout = ref(true);
+    const store = useMatrixStore();
 
-    return { blackout, dmxControlled, tab };
+    const _int = ref(setInterval(() => void store.status(), 60000));
+
+    onMounted(() => {
+      void store.status();
+    });
+
+    onUnmounted(() => clearInterval(_int.value));
+
+    const tab = ref(store.mode === 'text' ? 'text' : 'colors');
+
+    const brightness = computed({
+      get: () => store.brightness,
+      set: debounce((b: number) => store.setBrightness(b), 500),
+    });
+
+    const blackout = computed({
+      get: () => store.isBlackout,
+      set: debounce((x: boolean) => store.blackout(x), 250),
+    });
+
+    return { blackout, brightness, tab };
   },
 });
 </script>
