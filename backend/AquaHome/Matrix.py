@@ -93,7 +93,7 @@ def set_prefs():
             if pref == "pixels":
                 pixels = bytearray()
                 for i in data[pref]:
-                    pixels.extend([i >> 16, i >> 8 & 0xf, i & 0xf])
+                    pixels.extend([i >> 16, i >> 8 & 0xff, i & 0xff])
                 osc.send_message(f"/djpult/mode/{pref}", bytes(pixels))
             else:
                 osc.send_message(f"/djpult/mode/{pref}", data[pref])
