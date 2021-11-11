@@ -12,6 +12,14 @@
         <q-tab-panel name="fish_tank">
           <div class="text-h5">Aquarium</div>
           <p>Animation eines Aquariums.</p>
+          <q-item>
+            <q-item-section side>
+              <q-icon name="mdi-speedometer" />
+            </q-item-section>
+            <q-item-section>
+              <q-slider v-model="speed" title="Geschwindigkeit" :min="0" :max="255" />
+            </q-item-section>
+          </q-item>
         </q-tab-panel>
 
         <q-tab-panel name="text">
@@ -35,7 +43,7 @@
                   <q-icon name="mdi-speedometer" />
                 </q-item-section>
                 <q-item-section>
-                  <q-slider v-model="speed" :min="0" :max="255" />
+                  <q-slider v-model="speed" title="Geschwindigkeit" :min="0" :max="255" />
                 </q-item-section>
               </q-item>
             </div>
