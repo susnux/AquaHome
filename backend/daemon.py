@@ -4,6 +4,7 @@ from pythonosc.dispatcher import Dispatcher
 from pythonosc.udp_client import SimpleUDPClient
 import asyncio
 import sqlite3
+from socket import gaierror
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -32,7 +33,7 @@ def create_database():
         create_database()
         con = sqlite3.connect(DATABASE)
     cursor = con.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS matrix (mode INT, brightness INT, speed INT, id ROWID)''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS matrix (id INTEGER PRIMARY KEY, mode INT, brightness INT, speed INT)''')
     cursor.close()
     con.commit()
 
@@ -42,7 +43,10 @@ def status_handler(address, *args):
     with get_connection() as connection:
         cursor = connection.cursor()
         cursor.execute("insert into matrix (mode,brightness,speed) values (?,?,?);", args)
-        cursor.execute("DELETE FROM matrix WHERE id = (SELECT id FROM matrix ORDER BY id ASC LIMIT 1);")
+        cursor.execute("select count(*) from matrix;")
+        num = cursor.fetchone()[0]
+        if (num > 1):
+            cursor.execute(f"DELETE FROM matrix WHERE id in (SELECT id FROM matrix ORDER BY id ASC LIMIT {num-1});")
         connection.commit()
         cursor.close()
 
@@ -52,9 +56,12 @@ dispatcher.map("/djpult/status", status_handler)
 
 
 async def loop():
-    client = SimpleUDPClient(ip, port_tx)
     while True:
-        client.send_message('/djpult/status', port_rx)
+        try:
+            client = SimpleUDPClient(ip, port_tx)
+            client.send_message('/djpult/status', port_rx)
+        except gaierror:
+            logger.debug("Guess DJ pult is offline, skipping.")
         await asyncio.sleep(60)
 
 
