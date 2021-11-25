@@ -6,10 +6,11 @@ import asyncio
 import sqlite3
 from socket import gaierror
 from logging import getLogger
+import argparse
 
 logger = getLogger(__name__)
 
-DATABASE = "/tmp/matrix.sql"
+database = "/tmp/matrix.sql"
 ip = "djpult.lan"
 listen_ip = "0.0.0.0"
 port_rx = 8001
@@ -28,10 +29,10 @@ def create_database():
     logger.info("Creating database")
     global con
     try:
-        con = sqlite3.connect(DATABASE)
+        con = sqlite3.connect(database)
     except sqlite3.OperationalError as err:
         create_database()
-        con = sqlite3.connect(DATABASE)
+        con = sqlite3.connect(database)
     cursor = con.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS matrix (id INTEGER PRIMARY KEY, mode INT, brightness INT, speed INT)''')
     cursor.close()
@@ -77,4 +78,22 @@ async def init_main():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--remote', type=str, default="djpult.lan", help='IP of the remote device (Matrix)')
+    parser.add_argument('--listen', type=str, default="127.0.0.1", help='IP to listen to')
+    parser.add_argument('--database', type=str, default="matrix.sql", help='Database file')
+    parser.add_argument('--tx', type=int, default=8000, help='TX port of remote device')
+    parser.add_argument('--rx', type=int, default=8001, help='RX port of remote device')
+
+    args = parser.parse_args()
+    if args.remote:
+        ip = args.remote
+    if args.listen:
+        listen_ip = args.listen
+    if args.database:
+        database = args.database
+    if args.rx:
+        port_rx = args.rx
+    if args.tx:
+        port_tx = args.tx
     asyncio.run(init_main())
