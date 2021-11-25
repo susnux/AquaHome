@@ -1,8 +1,9 @@
 import sqlite3
 from flask import g
 from .app import app
+import os
 
-DATABASE = '/tmp/matrix.sql'
+DATABASE = os.getenv('matrix_database', 'matrix.sql')
 
 def get_db():
     db = getattr(g, '_database', None)
