@@ -1,36 +1,59 @@
 from flask import Blueprint
-from pulsectl import Pulse
+import alsaaudio
 
 
 pi_bp = Blueprint('pi', __name__)
 
 
-def pulse_volume(limit=None):
-    with Pulse("AquaHome") as pulse:
-        sink_input = pulse.sink_list()[0]
-        volume = sink_input.volume
-        if limit is not None:
-            volume.value_flat = limit
-            pulse.volume_set(sink_input, volume)
-        return volume.value_flat
+class HiFiBerry:
+    @staticmethod
+    def find_hifiberry():
+        for i in alsaaudio.card_indexes():
+            (name, longname) = alsaaudio.card_name(i)
+            if name == "snd_rpi_hifiberry_dacplus" or longname == "snd_rpi_hifiberry_dacplus":
+                return i
+        raise RuntimeError("HiFi Berry device not found")
 
+    @staticmethod
+    def limit(limit = True):
+        hifiberry = HiFiBerry.find_hifiberry()
+        mixer = alsaaudio.Mixer("Analogue", cardindex=hifiberry)
+        channel = alsaaudio.MIXER_CHANNEL_ALL
+        mixer.setvolume(100 if not limit else 0, channel)
+
+    def is_limited():
+        hifiberry = HiFiBerry.find_hifiberry()
+        mixer = alsaaudio.Mixer("Analogue", cardindex=hifiberry)
+        return any([c == 0 for c in mixer.getvolume()])
+
+    @staticmethod
+    def mute_hifiberry(unmute=False):
+        hifiberry = HiFiBerry.find_hifiberry()
+        mixer = alsaaudio.Mixer("Digital", cardindex=hifiberry)
+        mixer.setmute(1)
+
+    @staticmethod
+    def is_muted():
+        hifiberry = HiFiBerry.find_hifiberry()
+        mixer = alsaaudio.Mixer("Digital", cardindex=hifiberry)
+        return any([c == 1 for c in mixer.getmute()])
 
 
 @pi_bp.route("/api/pi/mute/")
 @pi_bp.route("/api/pi/mute/<int:i>", methods=["GET", "POST"])
 def mute_pi(i=None):
     if i is not None:
-        pulse_volume(0.0 if i == 1 else 0.6)
+        HiFiBerry.mute(i == 1)
         return {"data": i == 1}
     else:
-        return {"data": pulse_volume() < 0.01}
+        return {"data": HiFiBerry.is_muted()}
 
 
 @pi_bp.route("/api/pi/limit/")
 @pi_bp.route("/api/pi/limit/<int:i>", methods=["GET", "POST"])
 def limit_pi(i=None):
     if i is not None:
-        pulse_volume(1.0 if i == 0 else 0.6)
+        HiFiBerry.limit(i == 1)
         return {"data": i == 1}
     else:
-        return {"data": pulse_volume() < 0.98}
+        return {"data": HiFiBerry.is_limited()}
