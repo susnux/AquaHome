@@ -27,10 +27,10 @@ class HiFiBerry:
         return any([c == 0 for c in mixer.getvolume()])
 
     @staticmethod
-    def mute_hifiberry(unmute=False):
+    def mute(muted=True):
         hifiberry = HiFiBerry.find_hifiberry()
         mixer = alsaaudio.Mixer("Digital", cardindex=hifiberry)
-        mixer.setmute(1)
+        mixer.setmute(1 if muted else 0)
 
     @staticmethod
     def is_muted():
