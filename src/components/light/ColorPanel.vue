@@ -116,7 +116,7 @@ export default defineComponent({
     const rainbowVertical = computed({
       get: () => _vertical.value,
       set: (c: boolean) =>
-        store.setData({ vertical: c }).then(() => {
+        void store.setData({ vertical: c }).then(() => {
           _vertical.value = c;
         }),
     });

@@ -75,7 +75,7 @@ export default defineComponent({
 
     const brightness = computed({
       get: () => store.brightness,
-      set: debounce((b: number) => store.setBrightness(b), 500),
+      set: debounce((b: number) => void store.setBrightness(b), 500),
     });
 
     const blackout = computed({

@@ -81,7 +81,7 @@ export default defineComponent({
         void (async () => {
           try {
             if (mode == 'fish_tank') await store.setMode('fish_tank');
-            else if (mode == 'fade')
+            else if (mode == 'text')
               await store.setMode('text', {
                 color: color.value,
                 background: background.value,
@@ -135,7 +135,7 @@ export default defineComponent({
 
     const speed = computed({
       get: () => store.speed,
-      set: debounce((s: number) => store.setSpeed(s), 500),
+      set: debounce((s: number) => void store.setSpeed(s), 500),
     });
 
     function error(s = 'Fehler beim Senden der Daten.') {

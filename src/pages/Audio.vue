@@ -144,30 +144,30 @@ export default defineComponent({
     const _balanceBarFloor = ref(0);
     const balanceBarFloor = computed({
       get: () => _balanceBarFloor.value,
-      set: (x: number) => setBarFloorBalance(x).then((resp) => (_balanceBarFloor.value = resp.data.data)),
+      set: (x: number) => void setBarFloorBalance(x).then((resp) => (_balanceBarFloor.value = resp.data.data)),
     });
 
     const _barMuted = ref(false);
     const barMuted = computed({
       get: () => _barMuted.value,
-      set: (x: boolean) => muteBar(x).then((resp) => (_barMuted.value = resp.data.data)),
+      set: (x: boolean) => void muteBar(x).then((resp) => (_barMuted.value = resp.data.data)),
     });
 
     const _subwooferMuted = ref(false);
     const subwooferMuted = computed({
       get: () => _subwooferMuted.value,
-      set: (x: boolean) => muteBar(x).then((resp) => (_subwooferMuted.value = resp.data.data)),
+      set: (x: boolean) => void muteBar(x).then((resp) => (_subwooferMuted.value = resp.data.data)),
     });
 
     const _piMuted = ref(false);
     const piMuted = computed({
       get: () => _piMuted.value,
-      set: (x: boolean) => mutePi(x).then((resp) => (_piMuted.value = resp.data.data)),
+      set: (x: boolean) => void mutePi(x).then((resp) => (_piMuted.value = resp.data.data)),
     });
     const _piLimited = ref(true);
     const piLimited = computed({
       get: () => _piLimited.value,
-      set: (x: boolean) => limitPi(x).then((resp) => (_piLimited.value = resp.data.data)),
+      set: (x: boolean) => void limitPi(x).then((resp) => (_piLimited.value = resp.data.data)),
     });
 
     async function loadValues() {
