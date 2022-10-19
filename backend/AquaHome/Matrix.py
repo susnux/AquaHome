@@ -2,6 +2,7 @@ from flask import Blueprint, request, make_response
 from pythonosc.udp_client import SimpleUDPClient, OscMessage
 from enum import IntEnum
 from .db import get_db
+import socket
 
 ADDRESS = "djpult.lan"
 PORT = 8000
@@ -103,9 +104,15 @@ def set_prefs():
 
 @matrix_bp.route("/api/matrix/status", methods=["GET"])
 def get_status():
+    rec = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    rec.bind(('', 0))
+
     osc = SimpleUDPClient(ADDRESS, PORT)
-    osc.send_message('/djpult/status', PORT)
-    res = OscMessage(osc._sock.recv(4096))
+    osc.send_message('/djpult/status', rec.getsockname()[1])
+
+    data, _ = rec.recvfrom(1024)
+    res = OscMessage(data)
+    rec.close()
     if res.address != '/djpult/status':
         return make_response({"ok": False, "message": "OSC connection"}, 500)
     mode = Mode(res.params[0])
