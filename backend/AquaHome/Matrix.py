@@ -1,5 +1,5 @@
 from flask import Blueprint, request, make_response
-from pythonosc.udp_client import SimpleUDPClient
+from pythonosc.udp_client import SimpleUDPClient, OscMessage
 from enum import IntEnum
 from .db import get_db
 
@@ -103,11 +103,10 @@ def set_prefs():
 
 @matrix_bp.route("/api/matrix/status", methods=["GET"])
 def get_status():
-    con = get_db()
-    cur = con.cursor()
-    row = cur.execute("select mode, brightness, speed from matrix limit 1").fetchone()
-    cur.close()
-    if row:
-        mode = Mode(row[0])
-        return {"ok": True, "mode": mode.name, "brightness": row[1], "speed": row[2]}
-    return make_response({"ok": False}, 400)
+    osc = SimpleUDPClient(ADDRESS, PORT)
+    osc.send_message('/djpult/status', PORT)
+    res = OscMessage(osc._sock.recv(4096))
+    if res.address != '/djpult/status':
+        return make_response({"ok": False, "message": "OSC connection"}, 500)
+    mode = Mode(res.params[0])
+    return {"ok": True, "mode": mode.name, "brightness": res.params[1], "speed": res.params[2]}
