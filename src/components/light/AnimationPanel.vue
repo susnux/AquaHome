@@ -36,7 +36,21 @@
                 </q-icon>
               </template>
             </q-input>
-            <div class="col-sm-5 col-xs-12">
+            <q-select v-model="font" title="Schriftart" :options="fonts" filled class="col-sm-5 col-xs-12">
+              <template #prepend>
+                <q-icon name="mdi-format-font" />
+              </template>
+            </q-select>
+            <q-input filled debounce="900" v-model="background" label="Farbe (Hintergrund)" class="col-sm-5 col-xs-12">
+              <template #append>
+                <q-icon name="mdi-select-color" class="cursor-pointer">
+                  <q-popup-proxy transition-show="scale" transition-hide="scale">
+                    <q-color v-model="background" />
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+            <div class="col-12">
               <q-item-label caption>Geschwindigkeit</q-item-label>
               <q-item>
                 <q-item-section side>
@@ -47,15 +61,6 @@
                 </q-item-section>
               </q-item>
             </div>
-            <q-input filled debounce="900" v-model="background" label="Farbe (Hintergrund)" class="col-sm-5 col-xs-12">
-              <template #append>
-                <q-icon name="mdi-select-color" class="cursor-pointer">
-                  <q-popup-proxy transition-show="scale" transition-hide="scale">
-                    <q-color v-model="background" />
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
-            </q-input>
           </div>
         </q-tab-panel>
       </q-tab-panels>
@@ -85,7 +90,7 @@ export default defineComponent({
               await store.setMode('text', {
                 color: color.value,
                 background: background.value,
-                font: font.value,
+                font: font.value.value,
                 text: text.value,
               });
           } catch (reason) {
@@ -95,10 +100,14 @@ export default defineComponent({
       },
     });
 
+    const fonts = [
+      { value: 0, label: '4x7' },
+      { value: 1, label: '5x8' },
+    ];
     const background = ref('#000000');
     const color = ref('#FFAB00');
     const text = ref('');
-    const font = ref(0);
+    const font = ref(fonts[0]);
 
     watch([background, color, font, text], (current, old) => {
       if (current[0] != old[0]) {
@@ -122,7 +131,7 @@ export default defineComponent({
           });
       }
       if (current[2] != old[2])
-        store.setData({ font: font.value }).catch(() => {
+        store.setData({ font: font.value.value }).catch(() => {
           error();
           font.value = old[2];
         });
@@ -145,7 +154,7 @@ export default defineComponent({
       });
     }
 
-    return { background, color, text, font, speed, modeTab, splitterWidth };
+    return { background, color, text, font, fonts, speed, modeTab, splitterWidth };
   },
 });
 </script>
