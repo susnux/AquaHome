@@ -101,7 +101,7 @@ export default defineComponent({
     });
 
     const fonts = [
-      { value: 0, label: '4x7' },
+      { value: 0, label: '8x8' },
       { value: 1, label: '5x8' },
     ];
     const background = ref('#000000');
