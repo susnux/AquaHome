@@ -88,8 +88,8 @@ export default defineComponent({
             if (mode == 'fish_tank') await store.setMode('fish_tank');
             else if (mode == 'text')
               await store.setMode('text', {
-                color: color.value,
-                background: background.value,
+                color: parseInt(color.value.substring(1), 16),
+                background: parseInt(background.value.substring(1), 16),
                 font: font.value.value,
                 text: text.value,
               });
