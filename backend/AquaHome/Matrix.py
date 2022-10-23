@@ -97,7 +97,7 @@ def set_prefs():
                     pixels.extend([i >> 16, i >> 8 & 0xff, i & 0xff])
                 osc.send_message(f"/djpult/mode/{pref}", bytes(pixels))
             else:
-                osc.send_message(f"/djpult/mode/{pref}", data[pref].encode("latin-1") if isinstance(data[pref], str) else data[pref])
+                osc.send_message(f"/djpult/mode/{pref}", data[pref].encode("latin-1") if isinstance(data[pref], str) and data[pref] else data[pref])
         return {"ok": True}
     return make_response({"ok": False}, 400)
 
