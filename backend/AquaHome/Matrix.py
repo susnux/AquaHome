@@ -74,7 +74,7 @@ def set_mode():
         elif mode == "fish_tank":
             return _set_mode(Mode.fish_tank)
         elif mode == "text":
-            l = [prefs["background"]] if "background" in prefs else []
+            l = [prefs["background"]] if "background" in prefs else [0]
             if "color" in prefs:
                 l.append(prefs["color"])
                 if "font" in prefs:
