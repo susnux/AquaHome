@@ -50,6 +50,17 @@
                 </q-icon>
               </template>
             </q-input>
+            <div class="col-sm-5 col-xs-12">
+              <q-item-label caption>Zeichenabstand</q-item-label>
+              <q-item>
+                <q-item-section side>
+                  <q-icon name="mdi-format-letter-spacing" />
+                </q-item-section>
+                <q-item-section>
+                  <q-slider v-model="spacing" title="Zeichenabstand" :min="-1" :max="8" />
+                </q-item-section>
+              </q-item>
+            </div>
             <div class="col-12">
               <q-item-label caption>Geschwindigkeit</q-item-label>
               <q-item>
@@ -108,8 +119,9 @@ export default defineComponent({
     const color = ref('#FFAB00');
     const text = ref('');
     const font = ref(fonts[0]);
+    const spacing = ref(0);
 
-    watch([background, color, font, text], (current, old) => {
+    watch([background, color, font, text, spacing], (current, old) => {
       if (current[0] != old[0]) {
         store
           .setData({
@@ -140,6 +152,11 @@ export default defineComponent({
           error();
           text.value = old[3];
         });
+      if (current[4] != old[4])
+        store.setData({ spacing: spacing.value }).catch(() => {
+          error();
+          spacing.value = old[4];
+        })
     });
 
     const speed = computed({
@@ -154,7 +171,7 @@ export default defineComponent({
       });
     }
 
-    return { background, color, text, font, fonts, speed, modeTab, splitterWidth };
+    return { background, color, text, font, fonts, spacing, speed, modeTab, splitterWidth };
   },
 });
 </script>

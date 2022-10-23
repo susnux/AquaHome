@@ -18,11 +18,11 @@
     "vue": "^3.2.41"
   },
   "devDependencies": {
-    "@quasar/app-webpack": "^3.2.0",
+    "@quasar/app-webpack": "^3.6.2",
     "@types/node": "^16.11.68",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
-    "eslint": "^8.25.0",
+    "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-vue": "^9.6.0",
     "prettier": "^2.7.1",
